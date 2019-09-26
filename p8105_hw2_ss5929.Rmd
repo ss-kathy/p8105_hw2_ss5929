@@ -1,0 +1,89 @@
+---
+title: "p8105_hw2_ss5929"
+author: "Shuyi SHEN"
+date: "9/24/2019"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+TrashData = read_excel("/Users/sfdsfswerw/Desktop/p8105_hw2_ss5929/data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
+                       sheet=1,
+                       skip=1) %>%
+           janitor::clean_names() %>%
+           drop_na(dumpster) %>%
+           mutate_at(vars(sports_balls),round,0) 
+           #as.integer(pull(TrashData,sports_balls))
+  
+pre_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
+                       sheet=4,
+                       skip=1) %>% 
+  janitor::clean_names() %>% 
+  drop_na(total) %>% 
+  mutate( year= "2017" ) 
+
+pre_2018 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
+                       sheet=3,
+                       skip=1) %>%
+  janitor::clean_names() %>% 
+  drop_na(total) %>% 
+  mutate( year= "2018" )
+
+pre_da = rbind(pre_2017,pre_2018) %>%
+mutate(month = month.name[month])
+
+ 
+ 
+#left_join(pre_2017,pre_2018,by="month")  
+  
+```
+
+
+
+```{r}
+pols<-read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
+   janitor::clean_names() %>%
+   separate(mon,sep="-",into = c("year","month","day")) %>% 
+   mutate(month=as.numeric(month))%>%
+   mutate(month=month.name[month])%>%
+  pivot_longer(
+    cols=starts_with("prez"),
+    names_to = "president"
+  )%>%
+
+select(-day)
+
+snp<-read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
+  janitor::clean_names() %>%
+  separate(date,sep="/",into = c("day","month","year")) %>% 
+   arrange(year,month) %>%
+   mutate(month=as.numeric(month))%>%
+   mutate(month=month.name[month]) %>%
+   select(year,month,day,close)
+
+pols_snp <- full_join(pols,snp,by=c("year","month"))
+
+unemployment<-read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
+  janitor::clean_names()%>%
+  pivot_longer(
+     jan:dec,
+     names_to = "month" 
+) %>%
+mutate(year=as.character(year)) %>%
+mutate(month=factor(month)) %>%
+mutate(month=month.name[month])   
+
+full_join(pols_snp,unemployment,by=c("year","month", "value")) %>%view
+
+```
+
+
+
+```{r}
+
+
+
+
+```
+
