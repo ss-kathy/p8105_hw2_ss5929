@@ -2,88 +2,237 @@
 title: "p8105_hw2_ss5929"
 author: "Shuyi SHEN"
 date: "9/24/2019"
-output: html_document
+output: github_document
 ---
-
+## Problem 1
 ```{r}
 library(tidyverse)
 library(readxl)
+
 TrashData = read_excel("/Users/sfdsfswerw/Desktop/p8105_hw2_ss5929/data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-                       sheet=1,
-                       skip=1) %>%
+                       sheet = 1,
+                       range = "A2:N338"
+                       ) %>%
            janitor::clean_names() %>%
-           drop_na(dumpster) %>%
+           drop_na  (dumpster) %>%
            mutate_at(vars(sports_balls),round,0) 
-           #as.integer(pull(TrashData,sports_balls))
-  
+         
 pre_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-                       sheet=4,
-                       skip=1) %>% 
+                       sheet = 4,
+                       skip  = 1) %>% 
   janitor::clean_names() %>% 
-  drop_na(total) %>% 
-  mutate( year= "2017" ) 
+  drop_na() %>% 
+  mutate( year= "2017" )
 
 pre_2018 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-                       sheet=3,
-                       skip=1) %>%
+                       sheet = 3,
+                       skip  = 1) %>%
   janitor::clean_names() %>% 
-  drop_na(total) %>% 
-  mutate( year= "2018" )
+  drop_na() %>% 
+  mutate( year= "2018" ) 
 
 pre_da = rbind(pre_2017,pre_2018) %>%
-mutate(month = month.name[month])
+mutate(month = month.name[month]) 
 
- 
- 
-#left_join(pre_2017,pre_2018,by="month")  
   
 ```
 
+**Summary**
+
+*TrashData*
+
+There are `r nrow(TrashData)` observations in the `TrashData`dataset  with `r ncol(TrashData)` variables including information on the dumpster number,date of collection(``r colnames(TrashData)[2:4]``),amount of total litter(``r colnames(TrashData)[5:6]``), litter type(``r colnames(TrashData)[7:13]``) and ``r colnames(TrashData)[14]``(each ton of trash equates to on average 500 kilowatts of electricity and an average household will use 30 kilowatts per day ).
+
+*pre_2017*
+
+There are `r nrow(pre_2017)` observations in the `pre_2017` dataset with `r ncol(pre_2017)` variables including ``r colnames(pre_2017)``. The key variable is ``r colnames(pre_2017)[2]``, which means the total precipitation in that month
 
 
-```{r}
+
+*pre_2018*
+
+There are `r nrow(pre_2018)` observations in the `pre_2018` dataset with `r ncol(pre_2018)` variables including ``r colnames(pre_2018)``. The key variable is ``r colnames(pre_2018)[2]``, which means the total precipitation in that month
+
+
+*pre_da*
+
+There are `r nrow(pre_da)` observations with `r ncol(pre_da)` variables including ``r colnames(pre_da)`` in the `pre_da` dataset. The key variable is ``r colnames(pre_da)[2]``, which means the total precipitation in that month that year.
+
+
+The total precipitation in 2018 is `r sum(pre_2018$total)`.
+
+The median number of sports balls in a dumpster in 2017 is `r median(TrashData$sports_balls) `.
+
+## Problem 2
+```{r message= FALSE}
 pols<-read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
    janitor::clean_names() %>%
-   separate(mon,sep="-",into = c("year","month","day")) %>% 
+   separate(mon,sep="-",into = c("year","month","day")) %>%  
    mutate(month=as.numeric(month))%>%
    mutate(month=month.name[month])%>%
-  pivot_longer(
-    cols=starts_with("prez"),
-    names_to = "president"
-  )%>%
-
-select(-day)
+   pivot_longer(
+    cols         = starts_with("prez"),
+    names_to     = "president",
+    names_prefix = "prez_"
+   )%>% 
+   filter(value!="0") %>%
+   select(-value) %>%
+   select(-day) 
 
 snp<-read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
   janitor::clean_names() %>%
-  separate(date,sep="/",into = c("day","month","year")) %>% 
-   arrange(year,month) %>%
-   mutate(month=as.numeric(month))%>%
-   mutate(month=month.name[month]) %>%
-   select(year,month,day,close)
+  separate(date,sep="/",into = c("month","day","year")) %>% 
+   mutate (month=as.numeric(month))%>%
+   arrange(year,month) %>% 
+   mutate (month=month.name[month]) %>%
+   select (year,month, close) 
 
-pols_snp <- full_join(pols,snp,by=c("year","month"))
+pols_snp <- left_join(pols,snp,by=c("year","month")) 
 
 unemployment<-read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
   janitor::clean_names()%>%
   pivot_longer(
      jan:dec,
      names_to = "month" 
-) %>%
-mutate(year=as.character(year)) %>%
-mutate(month=factor(month)) %>%
-mutate(month=month.name[month])   
+) %>% 
+mutate(year  = as.character(year)) %>%
+mutate(month = factor(month)) %>%
+mutate(month = month.name[month])   
 
-full_join(pols_snp,unemployment,by=c("year","month", "value")) %>%view
-
-```
-
-
-
-```{r}
-
-
+result<-left_join(pols_snp,unemployment,by=c("year","month"))
 
 
 ```
+
+**Summary**
+
+*pols*
+
+There are `r nrow(pols)` objects with `r ncol(pols)` variables in `pols` dataset. The variables are:
+
+``r colnames(pols)[1]``: the associated year
+
+``r colnames(pols)[2]``: the associated month
+
+``r colnames(pols)[3]``: the number of republican governors on the associated date
+
+``r colnames(pols)[4]``: the number of republican senators on the associated date
+
+``r colnames(pols)[5]``: the number of republican representatives on the associated date
+
+``r colnames(pols)[6]``: the number of democratic governors on the associated date
+
+``r colnames(pols)[7]``: the number of democratic senators on the associated date
+
+``r colnames(pols)[8]``: the number of democratic representatives on the associated date
+
+``r colnames(pols)[9]``: whether the president was republican or democratic on the associated date
+
+and key variables are ``r colnames(pols)[3:9]`` 
+
+The range of years is from `r range(pols$year)[1]` to `r range(pols$year)[2]`. 
+
+*snp*
+
+There are `r nrow(snp)` objects with `r ncol(snp)` variables in `snp` dataset. The variables are ``r colnames(snp)`` and key variables is ``r colnames(snp)[3]`` indicating the closing values of the S&P stock index on the associated date
+
+The range of years is from `r range(snp$year)[1]` to 
+`r range(snp$year)[2]`.
+
+*unemployment*
+
+There are `r nrow(unemployment)` objects with `r ncol(unemployment)` variables in `umemployment` dataset. The variables are ``r colnames(unemployment)`` and key variables is ``r colnames(unemployment)[3]`` indicating percentage of unemployment in that month in that year. 
+
+The range of years is from `r range(unemployment$year)[1]` to `r range(unemployment$year)[2]`.
+
+*result*
+
+There are `r nrow(result)` objects with `r ncol(result)` variables in `result` dataset. The variables are ``r colnames(result)``.
+
+The range of years is from `r range(result$year)[1]` to `r range(result$year)[2]` .
+
+## Problem 3
+```{r message=FALSE}
+library(ggplot2)
+
+BabyNames = read_csv("data/Popular_Baby_Names.csv") %>% 
+  janitor::clean_names() %>% 
+  distinct()%>% 
+  mutate(childs_first_name=str_to_lower(childs_first_name)) %>%
+  mutate(
+    ethnicity=recode(ethnicity,"WHITE NON HISP"="WHITE NON HISPANIC",
+                               "BLACK NON HISP"="BLACK NON HISPANIC",
+                               "ASIAN AND PACI"="ASIAN AND PACIFIC ISLANDER")
+  ) 
+  
+Olivia=BabyNames %>%
+filter(childs_first_name=="olivia")   
+ tibble(
+    year      = Olivia$year_of_birth,
+    ethnicity = Olivia$ethnicity,
+    rank      = Olivia$rank
+  ) %>% 
+  pivot_wider(
+    names_from  = "year",
+    values_from = "rank" 
+  ) %>% 
+      knitr::kable(format="html")
+
+  
+names_male=BabyNames %>% 
+  filter(gender == "MALE",rank==1) %>% 
+  select(year_of_birth,childs_first_name,ethnicity) %>% 
+  pivot_wider(
+    names_from  = "year_of_birth",
+    values_from = "childs_first_name"
+  ) 
+names_male %>% knitr::kable(format = "html")
+
+
+
+BabyNames %>%
+  filter(gender=="MALE",
+         ethnicity=="WHITE NON HISPANIC", 
+         year_of_birth=="2016") %>% 
+  ggplot     (aes(x=rank,y=count))+
+  geom_point (aes(size=rank),alpha=.5,color="blue")+
+  geom_smooth(se=FALSE,color="black")+
+  labs       (title = "Count versus Rank", subtitle="Among Male in White Non Hispanic in 2016")+
+  theme      (plot.title=element_text(hjust=0.5),plot.subtitle = element_text(hjust = 0.5))
+
+```
+**Summary**
+
+*BabyNames*
+
+There are `r nrow(BabyNames)` observations with `r ncol(BabyNames)` variables in the dataset. The variables are 
+``r colnames(BabyNames)[1]``: year of birth
+
+``r colnames(BabyNames)[2]``: sex of the baby
+
+``r colnames(BabyNames)[3]``: mother's ethnicity
+
+``r colnames(BabyNames)[4]``: child's first name
+
+``r colnames(BabyNames)[5]``: number of babies with this name
+
+``r colnames(BabyNames)[6]``: frequency of baby names in descending order
+
+and key variables are ``r colnames(BabyNames)[4:6]``
+
+*Olivia*
+
+There are 3 varibles in this dataset including `year`,`ethnicity` and `rank` indicating the rank of Olivia among female in different ethnicity in different years.
+
+*names_male*
+
+There are 3 variables in this dataset including `year`,`ethnicity` and `childs_first_name` indicating the most popular name among male in different ethnicity over time.
+
+*plot*
+
+The graph shows the increase of count with the decrease of rank among male in white non hispanic in 2016. The xlab is rank while the ylab is count and the point means one specific childs_first_name.
+
+
+ 
+
 
