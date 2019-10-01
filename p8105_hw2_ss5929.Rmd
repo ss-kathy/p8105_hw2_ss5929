@@ -9,7 +9,7 @@ output: github_document
 library(tidyverse)
 library(readxl)
 
-TrashData = read_excel("/Users/sfdsfswerw/Desktop/p8105_hw2_ss5929/data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
+TrashData = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
                        sheet = 1,
                        range = "A2:N338"
                        ) %>%
