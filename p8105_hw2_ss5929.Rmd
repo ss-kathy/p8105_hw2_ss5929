@@ -45,13 +45,13 @@ There are `r nrow(TrashData)` observations in the `TrashData`dataset  with `r nc
 
 *pre_2017*
 
-There are `r nrow(pre_2017)` observations in the `pre_2017` dataset with `r ncol(pre_2017)` variables including ``r colnames(pre_2017)``. The key variable is ``r colnames(pre_2017)[2]``, which means the total precipitation in that month
+There are `r nrow(pre_2017)` observations in the `pre_2017` dataset with `r ncol(pre_2017)` variables including ``r colnames(pre_2017)``. The key variable is ``r colnames(pre_2017)[2]``, which means the total precipitation in that month.
 
 
 
 *pre_2018*
 
-There are `r nrow(pre_2018)` observations in the `pre_2018` dataset with `r ncol(pre_2018)` variables including ``r colnames(pre_2018)``. The key variable is ``r colnames(pre_2018)[2]``, which means the total precipitation in that month
+There are `r nrow(pre_2018)` observations in the `pre_2018` dataset with `r ncol(pre_2018)` variables including ``r colnames(pre_2018)``. The key variable is ``r colnames(pre_2018)[2]``, which means the total precipitation in that month.
 
 
 *pre_da*
@@ -87,7 +87,7 @@ snp<-read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
    mutate (month=month.name[month]) %>%
    select (year,month, close) 
 
-pols_snp <- left_join(pols,snp,by=c("year","month")) 
+pols_snp <- left_join(pols,snp,by=c("year","month"))
 
 unemployment<-read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
   janitor::clean_names()%>%
@@ -144,6 +144,10 @@ The range of years is from `r range(snp$year)[1]` to
 There are `r nrow(unemployment)` objects with `r ncol(unemployment)` variables in `umemployment` dataset. The variables are ``r colnames(unemployment)`` and key variables is ``r colnames(unemployment)[3]`` indicating percentage of unemployment in that month in that year. 
 
 The range of years is from `r range(unemployment$year)[1]` to `r range(unemployment$year)[2]`.
+
+*pols_snp*
+
+There are `r nrow(pols_snp)` objects with `r ncol(pols_snp)` variables in `pols_snp` dataset. The variables are ``r colnames(pols_snp)`` and key variables are ``r colnames(pols_snp)[3:10]``.
 
 *result*
 
