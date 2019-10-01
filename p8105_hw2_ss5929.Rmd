@@ -9,24 +9,24 @@ output: github_document
 library(tidyverse)
 library(readxl)
 
-TrashData = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
+TrashData = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
                        sheet = 1,
-                       range = "A2:N338"
+                       range = "A2:N408"
                        ) %>%
            janitor::clean_names() %>%
            drop_na  (dumpster) %>%
            mutate_at(vars(sports_balls),round,0) 
          
-pre_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-                       sheet = 4,
-                       skip  = 1) %>% 
+pre_2017 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+                       sheet = 6,
+                       skip  = 1) %>%  
   janitor::clean_names() %>% 
   drop_na() %>% 
-  mutate( year= "2017" )
+  mutate( year= "2017" ) 
 
-pre_2018 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-                       sheet = 3,
-                       skip  = 1) %>%
+pre_2018 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+                       sheet = 5,
+                       skip  = 1) %>% 
   janitor::clean_names() %>% 
   drop_na() %>% 
   mutate( year= "2018" ) 
