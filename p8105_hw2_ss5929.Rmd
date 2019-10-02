@@ -31,6 +31,7 @@ pre_2018 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   drop_na() %>% 
   mutate( year= "2018" ) 
 
+#combine two precipitation datasets
 pre_da = rbind(pre_2017,pre_2018) %>%
 mutate(month = month.name[month]) 
 
@@ -41,7 +42,9 @@ mutate(month = month.name[month])
 
 *TrashData*
 
-There are `r nrow(TrashData)` observations in the `TrashData`dataset  with `r ncol(TrashData)` variables including information on the dumpster number,date of collection(``r colnames(TrashData)[2:4]``),amount of total litter(``r colnames(TrashData)[5:6]``), litter type(``r colnames(TrashData)[7:13]``) and ``r colnames(TrashData)[14]``(each ton of trash equates to on average 500 kilowatts of electricity and an average household will use 30 kilowatts per day ).
+There are `r nrow(TrashData)` observations in the `TrashData`dataset  with `r ncol(TrashData)` variables including information on the dumpster number,date of collection(``r colnames(TrashData)[2:4]``),amount of total litter(``r colnames(TrashData)[5:6]``), litter type(``r colnames(TrashData)[7:13]``) and ``r colnames(TrashData)[14]``(each ton of trash equates to on average 500 kilowatts of electricity and an average household will use 30 kilowatts per day ). 
+
+The key variables are ``r colnames(TrashData)[5:14]``.
 
 *pre_2017*
 
@@ -87,6 +90,7 @@ snp<-read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
    mutate (month=month.name[month]) %>%
    select (year,month, close) 
 
+# merge the first and second data set
 pols_snp <- left_join(pols,snp,by=c("year","month"))
 
 unemployment<-read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
@@ -99,6 +103,7 @@ mutate(year  = as.character(year)) %>%
 mutate(month = factor(month)) %>%
 mutate(month = month.name[month])   
 
+#merge all three data set
 result<-left_join(pols_snp,unemployment,by=c("year","month"))
 
 
@@ -159,6 +164,7 @@ The range of years is from `r range(result$year)[1]` to `r range(result$year)[2]
 ```{r message=FALSE}
 library(ggplot2)
 
+# read the data,clean and tidy
 BabyNames = read_csv("data/Popular_Baby_Names.csv") %>% 
   janitor::clean_names() %>% 
   distinct()%>% 
@@ -168,7 +174,8 @@ BabyNames = read_csv("data/Popular_Baby_Names.csv") %>%
                                "BLACK NON HISP"="BLACK NON HISPANIC",
                                "ASIAN AND PACI"="ASIAN AND PACIFIC ISLANDER")
   ) 
-  
+
+# the popularity of olivia among different ethnicity over time  
 Olivia=BabyNames %>%
 filter(childs_first_name=="olivia")   
  tibble(
@@ -182,7 +189,7 @@ filter(childs_first_name=="olivia")
   ) %>% 
       knitr::kable(format="html")
 
-  
+# the most popular name among the male in different ethnicity over time  
 names_male=BabyNames %>% 
   filter(gender == "MALE",rank==1) %>% 
   select(year_of_birth,childs_first_name,ethnicity) %>% 
@@ -193,14 +200,13 @@ names_male=BabyNames %>%
 names_male %>% knitr::kable(format = "html")
 
 
-
+# plot the relationship between rank and count among male in white non-hispanic
 BabyNames %>%
   filter(gender=="MALE",
          ethnicity=="WHITE NON HISPANIC", 
          year_of_birth=="2016") %>% 
   ggplot     (aes(x=rank,y=count))+
   geom_point (aes(size=rank),alpha=.5,color="blue")+
-  geom_smooth(se=FALSE,color="black")+
   labs       (title = "Count versus Rank", subtitle="Among Male in White Non Hispanic in 2016")+
   theme      (plot.title=element_text(hjust=0.5),plot.subtitle = element_text(hjust = 0.5))
 
@@ -234,7 +240,7 @@ There are 3 variables in this dataset including `year`,`ethnicity` and `childs_f
 
 *plot*
 
-The graph shows the increase of count with the decrease of rank among male in white non hispanic in 2016. The xlab is rank while the ylab is count and the point means one specific childs_first_name.
+The graph shows the increase of count with the decrease of rank among male in white non hispanic in 2016. The xlab is rank while the ylab is count and the point means one specific childs_first_name. The size of point indicates the rank.
 
 
  
