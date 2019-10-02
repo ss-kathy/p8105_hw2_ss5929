@@ -156,7 +156,7 @@ There are `r nrow(pols_snp)` objects with `r ncol(pols_snp)` variables in `pols_
 
 *result*
 
-There are `r nrow(result)` objects with `r ncol(result)` variables in `result` dataset. The variables are ``r colnames(result)``.
+There are `r nrow(result)` objects with `r ncol(result)` variables in `result` dataset. The variables are ``r colnames(result)`` and key variables are ``r colnames(result)[3:11]``
 
 The range of years is from `r range(result$year)[1]` to `r range(result$year)[2]` .
 
@@ -211,6 +211,7 @@ BabyNames %>%
   theme      (plot.title=element_text(hjust=0.5),plot.subtitle = element_text(hjust = 0.5))
 
 ```
+
 **Summary**
 
 *BabyNames*
